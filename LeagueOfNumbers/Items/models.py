@@ -2,15 +2,19 @@ from django.db import models
 
 # Create your models here.
 
+LONG_TEXT_FIELD_LENGTH = 256
+
 class Item(models.Model):
     #TODO Verify database relationships for components, image, gold, tags, stats, and builds
     id = models.IntegerField(primary_key=True)
-    name = models.CharField()
-    colloq = models.CharField()
-    plaintext = models.CharField()
+    name = models.CharField(max_length=LONG_TEXT_FIELD_LENGTH)
+    colloq = models.CharField(max_length=LONG_TEXT_FIELD_LENGTH)
+    plaintext = models.CharField(max_length=LONG_TEXT_FIELD_LENGTH)
 
-    components = models.ManyToManyField(to='self',related_name='components', symmetrical=False,null=True)
+    components = models.ManyToManyField(to='self',related_name='builds_into', symmetrical=False,blank=True)
+    builds = models.ManyToManyField(to='self', related_name='builds_from', symmetrical=False, blank=True)
 
+    tags = models.ManyToManyField(to='Tag', related_name='tags', symmetrical=False, blank=True)
     base_price = models.IntegerField()
     sell_price = models.IntegerField()
     buyable = models.BooleanField()
@@ -20,9 +24,8 @@ class Item(models.Model):
         return -1
 
     depth = models.IntegerField()
-    builds = models.ManyToManyField(to='self',related_name='components', symmetrical=False,null=True)
 
-    tags = models.ManyToManyField(to='Tag')
+
 class Item_Stats(models.Model):
     item = models.ForeignKey('Items.Item',on_delete=models.CASCADE)
     armor = models.IntegerField(default=0)
@@ -51,4 +54,4 @@ class Consumable(models.Model):
     stacks = models.IntegerField()
 
 class Tag(models.Model):
-    name = models.CharField()
+    name = models.CharField(max_length=LONG_TEXT_FIELD_LENGTH)
