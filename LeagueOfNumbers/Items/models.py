@@ -11,10 +11,6 @@ class Item(models.Model):
     colloq = models.CharField(max_length=LONG_TEXT_FIELD_LENGTH)
     plaintext = models.CharField(max_length=LONG_TEXT_FIELD_LENGTH)
 
-    components = models.ManyToManyField(to='self',related_name='builds_into', symmetrical=False,blank=True)
-    builds = models.ManyToManyField(to='self', related_name='builds_from', symmetrical=False, blank=True)
-
-    tags = models.ManyToManyField(to='Tag', related_name='tags', symmetrical=False, blank=True)
     base_price = models.IntegerField()
     sell_price = models.IntegerField()
     buyable = models.BooleanField()
@@ -27,7 +23,7 @@ class Item(models.Model):
 
 
 class Item_Stats(models.Model):
-    item = models.ForeignKey('Items.Item',on_delete=models.CASCADE)
+    Item = models.ForeignKey('Item',on_delete=models.CASCADE)
     armor = models.IntegerField(default=0)
     magic_resist = models.IntegerField(default=0)
     hp = models.IntegerField(default=0)
@@ -49,9 +45,5 @@ class Item_Stats(models.Model):
     active = models.BooleanField(default=False)
     passive = models.BooleanField(default=False)
 
-class Consumable(models.Model):
-    item = models.ForeignKey('Items.Item',on_delete=models.CASCADE)
-    stacks = models.IntegerField()
 
-class Tag(models.Model):
-    name = models.CharField(max_length=LONG_TEXT_FIELD_LENGTH)
+

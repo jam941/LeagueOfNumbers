@@ -21,8 +21,7 @@ from Items import views
 router = routers.DefaultRouter()
 
 router.register(r'items',views.ItemViewSet)
-router.register(r'item_stats',views.ItemStatViewset)
-router.register(r'consumables',views.ConsumableViewSet)
+router.register(r'items_stats',views.ItemStatsViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
