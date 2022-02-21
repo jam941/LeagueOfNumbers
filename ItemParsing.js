@@ -1,9 +1,13 @@
+
+const DEBUG = true
 fs = require('fs');
+const axios = require('axios');
 const SAVE_TRIM = 'trimmed_items.json'
 
 const SUPPORT_ITEMS = [3850,3851,3853,3858,3855,3857,3859,3860,3863,3864,3862,3854]
 const SMITE_ITEMS = [1035,1039]
 const OMIT_ITEMS = [1035, 2052,3400,3599,3600]
+
 
 const STAT_LOOKUP = {
     'FlatMovementSpeedMod':'armor',
@@ -20,6 +24,8 @@ const STAT_LOOKUP = {
     'PercentMovementSpeedMod':'MS%',
 }
 //fs.readFile()
+
+
 let data = JSON.parse(fs.readFileSync('item.json'));
 let items = data.data
 
@@ -56,6 +62,8 @@ function isBasic(check,check_id){
     check_id = parseInt(check_id)
     return !check.depth && !isSupportItem(check_id) && !isSmiteItem(check_id) && !isOmitted(check_id)
 }
+
+
 
 function isSupportItem(check){
     //console.log('Is: ', check, ' a support item?  ', SUPPORT_ITEMS.includes(check))
@@ -96,39 +104,96 @@ for(let id in items){
           console.log('Added depth value for: ', item.name) 
         
     }
+    if((!('depth' in item))||item.depth == undefined){
+        item.depth = -1
+    }
 }
-var ALL_STATS = [];
-console.log('Adding basic items to database')
+
+function getBuilds(item){
+    if('from' in item){
+        let retList = []
+        console.log('Formating build partents for: ', item.name)
+        item.from.forEach(e=>{
+            
+            retList.push('http://127.0.0.1:8000/items/'+ e + '/')
+        })
+        console.log("found:", retList.length)
+        return retList
+    }
+    
+    return []
+}
+
+
+let id_set = {}
 for(let id in items){
     let item = items[id]
-    if(!item.depth){
-        let form_item = {
-            "name": item.name,
-            "colloq": item.colloq,
-            "plaintext": item.plaintext,
-            "base_price": item.gold.base,
-            "sell_price": item.gold.sell,
-            "buyable": item.gold.purchasable,
-            "depth": item.depth
-        }
 
-        let item_stats = {
-
-        }
-        
+    if (item.depth in Object.keys(id_set)){
+        id_set[item.depth].push(id)
     }
-    let stats_i = item.stats;
-    let temp = Object.keys(stats_i);
-
-    //TODO GRAFT Haste out of descriptions, mana regen, lethality, pen, tenacity,
-    for(let x in temp){
-        //console.log(temp)
-        temp.forEach(e=>{
-            if(!ALL_STATS.includes(e)){
-                ALL_STATS.push(e);
-            }
-        })
-        
+    else{
+        console.log('creating depth set for: ', item.depth, 'with item name: ', item.name)
+        id_set[item.depth] = [id]
     }
 }
-console.log(ALL_STATS)
+
+
+var ALL_STATS = [];
+console.log('Adding basic items to database')
+
+
+var sorted_keyset = Object.keys(id_set).sort()
+console.log('sorted keyset: ', sorted_keyset)
+
+function make_request(form){
+    console.log(form)
+    return axios.post('http://127.0.0.1:8000/items/',form).catch(e=>{
+        console.log('Issues with: ', form.name)
+    })
+}
+
+async function postItems(depth_limit,itemList){
+    let promises = []
+
+    for(let i in itemList){
+        let item = itemList[i]
+        let id = i
+        //console.log('Doing item for: ', id)
+
+        if(item.depth === depth_limit){
+            //console.log('Adding item: ', item.name)
+            let builds  = getBuilds(item)
+        
+            let form_item = {
+                "id":parseInt(id),
+                "name": item.name,
+                "base_price": item.gold.base,
+                "sell_price": item.gold.sell,
+                "buyable": item.gold.purchasable,
+                "depth": item.depth,
+                "builds_from": builds
+            }
+            
+            promises.push(make_request(form_item,item))
+            
+        }
+    }
+    let d = await promises
+    return d
+
+
+}
+
+//sorted_keyset = [-1]
+let test_set = [-1,0,1,2]
+for(let k in sorted_keyset){
+    if(parseInt(k) in test_set){
+        //console.log(typeof k)
+        const responses  = postItems(parseInt(k), items)
+        
+    }
+    
+}
+
+console.log('Done')
