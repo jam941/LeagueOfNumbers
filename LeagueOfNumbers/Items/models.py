@@ -37,6 +37,8 @@ class Item(models.Model):
 
 
 class Item_Stats(models.Model):
+
+    parent_id = models.IntegerField(primary_key=True)
     Item = models.ForeignKey('Item', on_delete=models.CASCADE)
 
     Move_Speed = models.FloatField(default=0.0)

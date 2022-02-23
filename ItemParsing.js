@@ -206,32 +206,21 @@ for(let k in sorted_keyset){
     } 
 }
 
-if(options.populate){
+if(true){
    Object.keys(items).forEach(e=>{
     let item = items[e]
     let url = 'http://127.0.0.1:8000/items/'+e+'/'
     axios.get(url).then(res=>{
         let d = res.data
         res.data.builds_from=getBuilds(item)
-        console.log()
-        axios.put(url,res.data).catch(()=>{console.log('Error PUT of: ',item.name,' when trying to add build paths')})
+        //console.log()
+        axios.put(url,res.data).catch(()=>{
+            //console.log('Error PUT of: ',item.name,' when trying to add build paths')
+        })
     }).catch(err =>{
-        console.log('Error GET of: ',item.name,' when trying to add build paths')
+        //console.log('Error GET of: ',item.name,' when trying to add build paths')
     })
 }) 
 }
 
-const statsGen = require('./Stats.js')
-const stats = statsGen()
-
-let uStats = {}
-Object.keys(stats).forEach(e=>{
-    let tempItem = stats[e]
-    Object.keys(tempItem).forEach(f=>{
-        if(!Object.keys(uStats).includes(f)){
-            uStats[f] = tempItem[f] + ':' + e
-        }
-    })
-})
-console.log(uStats)
 console.log('Done')

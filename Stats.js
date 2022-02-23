@@ -27,46 +27,61 @@ function clean_edges(br_br){
 }
 
 
-module.exports = function(){
-    fs = require('fs');
-    let data = JSON.parse(fs.readFileSync('stats_db.json'));
-    let items = data
+const axios = require('axios');
+fs = require('fs');
+let data = JSON.parse(fs.readFileSync('stats_db.json'));
+let items = data
 
-    let stats = {}
-    //console.log('Items found before removing non-rift items:',Object.keys(items).length)
-    for(let k in items){
-        let item = items[k]
+let stats = {}
+//console.log('Items found before removing non-rift items:',Object.keys(items).length)
+for(let k in items){
+    let item = items[k]
+    
+    let desc =  item.description
+    if(!item.requiredAlly){
+        try{desc = desc.split('stats>')[1]
+        desc = desc.split('<attention>')
+        desc = desc.join()
+        //console.log(desc)
         
-        let desc =  item.description
-        if(!item.requiredAlly){
-            try{desc = desc.split('stats>')[1]
-            desc = desc.split('<attention>')
-            desc = desc.join()
-            //console.log(desc)
-            
-            let att_br = desc.split('attention').join()
-            //console.log(att_br)
+        let att_br = desc.split('attention').join()
+        //console.log(att_br)
 
-            let br_br = desc.split('<br>')
+        let br_br = desc.split('<br>')
 
-            clean_edges(br_br)
-            console.log(br_br)
-            let stat = {}
-            br_br.forEach(e=>{
-                let v = e.substring(0,e.indexOf(' '))
-                let label = e.substring(e.indexOf(' ')+1)
-                while(label.includes(' ')){
-                    label = label.replace(' ','_')
-                }
-                //console.log(v)
-                //console.log(label)
-                stat[label] = v
-            })
-            //console.log(stat)
-            stats[item.id] = stat}
-        
-            catch(err){ }
-        }
+        clean_edges(br_br)
+        console.log(br_br)
+        let stat = {}
+        br_br.forEach(e=>{
+            let v = e.substring(0,e.indexOf(' '))
+            let label = e.substring(e.indexOf(' ')+1)
+            while(label.includes(' ')){
+                label = label.replace(' ','_')
+            }
+            //console.log(v)
+            //console.log(label)
+            stat[label] = v
+        })
+        //console.log(stat)
+        stats[item.id] = stat}
+    
+        catch(err){ }
     }
-    return stats
 }
+
+Object.keys(stats).forEach(e=>{
+    let tempItem = stats[e]
+    Object.keys(tempItem).forEach(field=>{
+        let val = tempItem[field]
+        if((val+ '').includes('%')){
+            val = (val+'').split('%')[0]/100
+            tempItem[field] = val
+            
+        }
+        tempItem['parent_id'] = parseInt(e)
+        tempItem['Item'] = "http://127.0.0.1:8000/items/"+e+'/'
+        axios.post("http://127.0.0.1:8000/items_stats/",tempItem).catch(err=>{
+            console.log(err)
+        })
+    })
+})
