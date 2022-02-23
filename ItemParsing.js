@@ -1,5 +1,15 @@
+const optionDefinitions = [
+    {name:'verbose',alias:'v',type:Boolean,defaultOption:false},
+    {name:'populate',alias:'p',type:Boolean,defaultOption:false}
+]
 
-const DEBUG = true
+const commandLineArgs = require('command-line-args')
+const options  = commandLineArgs(optionDefinitions)
+
+
+
+
+const DEBUG = options.verbose
 fs = require('fs');
 const axios = require('axios');
 const SAVE_TRIM = 'trimmed_items.json'
@@ -188,15 +198,16 @@ async function postItems(depth_limit,itemList){
 //sorted_keyset = [-1]
 let test_set = [-1,0,1,2,3]
 for(let k in sorted_keyset){
-    if(parseInt(k) in test_set){
-        //console.log(typeof k)
-        //const responses  = postItems(parseInt(k), items)
     
+    if(options.populate){
+
+        const responses  = postItems(parseInt(k), items)
+        
     } 
 }
 
-
-Object.keys(items).forEach(e=>{
+if(options.populate){
+   Object.keys(items).forEach(e=>{
     let item = items[e]
     let url = 'http://127.0.0.1:8000/items/'+e+'/'
     axios.get(url).then(res=>{
@@ -207,7 +218,20 @@ Object.keys(items).forEach(e=>{
     }).catch(err =>{
         console.log('Error GET of: ',item.name,' when trying to add build paths')
     })
+}) 
+}
+
+const statsGen = require('./Stats.js')
+const stats = statsGen()
+
+let uStats = {}
+Object.keys(stats).forEach(e=>{
+    let tempItem = stats[e]
+    Object.keys(tempItem).forEach(f=>{
+        if(!Object.keys(uStats).includes(f)){
+            uStats[f] = tempItem[f] + ':' + e
+        }
+    })
 })
-
-
+console.log(uStats)
 console.log('Done')
