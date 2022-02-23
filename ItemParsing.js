@@ -112,12 +112,12 @@ for(let id in items){
 function getBuilds(item){
     if('from' in item){
         let retList = []
-        console.log('Formating build partents for: ', item.name)
+        //console.log('Formating build partents for: ', item.name)
         item.from.forEach(e=>{
             
             retList.push('http://127.0.0.1:8000/items/'+ e + '/')
         })
-        console.log("found:", retList.length)
+        
         return retList
     }
     
@@ -172,7 +172,7 @@ async function postItems(depth_limit,itemList){
                 "sell_price": item.gold.sell,
                 "buyable": item.gold.purchasable,
                 "depth": item.depth,
-                "builds_from": builds
+                "builds_from": []
             }
             
             promises.push(make_request(form_item,item))
@@ -186,14 +186,28 @@ async function postItems(depth_limit,itemList){
 }
 
 //sorted_keyset = [-1]
-let test_set = [-1,0,1,2]
+let test_set = [-1,0,1,2,3]
 for(let k in sorted_keyset){
     if(parseInt(k) in test_set){
         //console.log(typeof k)
-        const responses  = postItems(parseInt(k), items)
-        
-    }
+        //const responses  = postItems(parseInt(k), items)
     
+    } 
 }
+
+
+Object.keys(items).forEach(e=>{
+    let item = items[e]
+    let url = 'http://127.0.0.1:8000/items/'+e+'/'
+    axios.get(url).then(res=>{
+        let d = res.data
+        res.data.builds_from=getBuilds(item)
+        console.log()
+        axios.put(url,res.data).catch(()=>{console.log('Error PUT of: ',item.name,' when trying to add build paths')})
+    }).catch(err =>{
+        console.log('Error GET of: ',item.name,' when trying to add build paths')
+    })
+})
+
 
 console.log('Done')
