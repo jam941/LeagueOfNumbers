@@ -37,6 +37,7 @@ class Item(models.Model):
     def __str__(self):
         return self.name
 
+    tags = models.ManyToManyField('Tag',symmetrical=False,blank=True)
 
 class Item_Stats(models.Model):
 
@@ -65,5 +66,5 @@ class Item_Stats(models.Model):
     Gold_Per_10_Seconds = models.FloatField(default=0.0)
 
 class Tag(models.Model):
-    builds_from = models.ManyToManyField('Item', symmetrical=False, blank=True)
+    id = models.IntegerField(primary_key=True)
     tag = models.CharField(max_length=LONG_TEXT_FIELD_LENGTH)

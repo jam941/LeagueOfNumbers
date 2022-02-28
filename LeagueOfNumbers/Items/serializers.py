@@ -38,4 +38,4 @@ class ItemStatsSerializer(serializers.HyperlinkedModelSerializer):
 class TagSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tag
-        fields = '__all__'
+        fields = ['id','tag']
