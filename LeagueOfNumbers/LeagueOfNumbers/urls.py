@@ -22,6 +22,7 @@ router = routers.DefaultRouter()
 
 router.register(r'items',views.ItemViewSet)
 router.register(r'items_stats',views.ItemStatsViewSet)
+router.register(r'tags',views.TagViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

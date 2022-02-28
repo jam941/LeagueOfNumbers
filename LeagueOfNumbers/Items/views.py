@@ -22,3 +22,10 @@ class ItemStatsViewSet(viewsets.ModelViewSet):
     serializer_class = ItemStatsSerializer
     permission_classes = [permissions.AllowAny]
 
+class TagViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = [permissions.AllowAny]

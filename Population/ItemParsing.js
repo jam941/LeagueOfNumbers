@@ -160,6 +160,7 @@ function make_request(form){
     console.log(form)
     return axios.post('http://127.0.0.1:8000/items/',form).catch(e=>{
         console.log('Issues with: ', form.name)
+        
     })
 }
 
@@ -182,14 +183,15 @@ async function postItems(depth_limit,itemList){
                 "sell_price": item.gold.sell,
                 "buyable": item.gold.purchasable,
                 "depth": item.depth,
-                "builds_from": []
+                "builds_from": [],
+                "img":item.image.full
             }
             
             promises.push(make_request(form_item,item))
             
         }
     }
-    let d = await promises
+    let d = await Promise.all(promises)
     return d
 
 
@@ -206,7 +208,7 @@ for(let k in sorted_keyset){
     } 
 }
 
-if(true){
+if(!options.populate){
    Object.keys(items).forEach(e=>{
     let item = items[e]
     let url = 'http://127.0.0.1:8000/items/'+e+'/'

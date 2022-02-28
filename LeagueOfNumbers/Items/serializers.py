@@ -6,7 +6,7 @@ from Items.models import *
 class ItemSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Item
-        fields = ['id', 'name', 'base_price', 'sell_price', 'buyable', 'depth', 'builds_from', 'total_price']
+        fields = ['id', 'name', 'base_price', 'sell_price', 'buyable', 'depth', 'builds_from', 'total_price','img']
 
 
 class ItemStatsSerializer(serializers.HyperlinkedModelSerializer):
@@ -34,3 +34,8 @@ class ItemStatsSerializer(serializers.HyperlinkedModelSerializer):
                   'Tenacity',
                   'Lethality',
                   'Gold_Per_10_Seconds', ]
+
+class TagSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Tag
+        fields = '__all__'

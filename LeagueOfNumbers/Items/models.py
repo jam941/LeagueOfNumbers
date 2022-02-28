@@ -16,6 +16,8 @@ class Item(models.Model):
     builds_from = models.ManyToManyField('Item', symmetrical=False, blank=True)
     depth = models.IntegerField()
 
+    img = models.CharField(max_length=LONG_TEXT_FIELD_LENGTH)
+
     @property
     def total_price(self):
         #if self.depth < 1:
@@ -61,3 +63,7 @@ class Item_Stats(models.Model):
     Tenacity = models.FloatField(default=0.0)
     Lethality = models.FloatField(default=0.0)
     Gold_Per_10_Seconds = models.FloatField(default=0.0)
+
+class Tag(models.Model):
+    builds_from = models.ManyToManyField('Item', symmetrical=False, blank=True)
+    tag = models.CharField(max_length=LONG_TEXT_FIELD_LENGTH)
