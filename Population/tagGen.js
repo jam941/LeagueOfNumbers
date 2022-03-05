@@ -18,7 +18,7 @@ Object.keys(items).forEach(element => {
 });
 console.log(tags)
 let count = 0
-Object.keys(tags).forEach(e=>{
+for(let e in tags){
     let form = {
         id:count,
         tag:e,
@@ -26,14 +26,37 @@ Object.keys(tags).forEach(e=>{
 
     }
     
-    axios.post('http://127.0.0.1:8000/tags/',form).then(f=>{
-        console.log(f)
+    const DO_BOTH = false
+    if(DO_BOTH){
+        axios.post('http://127.0.0.1:8000/tags/',form).then(f=>{
+            console.log(f)
+            tags[e].forEach(item=>{
+                axios.get(item).then(i=>{
+                    i.tags.push('http://127.0.0.1:8000/tags/'+count+'/')
+                    axios.put(item,i)
+                })
+            })
+            }).catch(temp=>{
+                //console.log(temp)
+            })
         
-    }).catch(test=>{
-        console.log(test)
-    })
-    count+=1    
+    }
+    else{
+        tags[e].forEach(item=>{
+            axios.get('http://127.0.0.1:8000/items/3143/').then(response=>{
+                
+                let i = response.data
+                i.tags.push('http://127.0.0.1:8000/tags/'+count+'/')
+                axios.put(item,i).catch(err =>{console.log(i)})
+                //console.log('Item: ', item,'\nData: ',i )
+            }).catch(temp=>{
+                //console.log(temp)
+            })
+        })
+    }
+    count+=1 
+        
     
     
     
-})
+}

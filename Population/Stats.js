@@ -81,7 +81,7 @@ Object.keys(stats).forEach(e=>{
         tempItem['parent_id'] = parseInt(e)
         tempItem['Item'] = "http://127.0.0.1:8000/items/"+e+'/'
         axios.post("http://127.0.0.1:8000/items_stats/",tempItem).catch(err=>{
-            console.log(err)
+            console.log(tempItem)
         })
     })
 })
