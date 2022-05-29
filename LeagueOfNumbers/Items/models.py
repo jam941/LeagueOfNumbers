@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 
-LONG_TEXT_FIELD_LENGTH = 256
+LONG_TEXT_FIELD_LENGTH = 1500
 
 
 class Item(models.Model):
@@ -37,7 +37,7 @@ class Item(models.Model):
     def __str__(self):
         return self.name
 
-    tags = models.ManyToManyField('Tag',symmetrical=False,blank=True)
+
 
 class Item_Stats(models.Model):
 
